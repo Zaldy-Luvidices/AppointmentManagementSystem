@@ -1,4 +1,5 @@
 ﻿using AppointmentManagementSystem.Client.Services;
+using AppointmentManagementSystem.Client.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
@@ -22,6 +23,7 @@ namespace AppointmentManagementSystem.Client
             services.AddSingleton(new HttpClient { BaseAddress = new Uri("http://localhost:5001/") });
             services.AddSingleton<IApiService, ApiService>();
             services.AddSingleton<MainWindow>();
+            services.AddSingleton<MainViewModel>();
 
             Services = services.BuildServiceProvider();
         }
@@ -30,6 +32,7 @@ namespace AppointmentManagementSystem.Client
         {
             base.OnStartup(e);
             var mainWindow = Services.GetRequiredService<MainWindow>();
+            mainWindow.DataContext = Services.GetRequiredService<MainViewModel>();
             mainWindow.Show();
         }
     }

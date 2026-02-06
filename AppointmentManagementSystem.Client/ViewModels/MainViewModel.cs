@@ -1,0 +1,81 @@
+﻿using AppointmentManagementSystem.Client.Commands;
+using AppointmentManagementSystem.Client.Models;
+using AppointmentManagementSystem.Client.Services;
+using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Threading.Tasks;
+using System.Windows.Input;
+
+namespace AppointmentManagementSystem.Client.ViewModels
+{
+    public class MainViewModel : INotifyPropertyChanged
+    {
+        private readonly IApiService _apiService;
+
+        private ObservableCollection<Appointment> _appointments = new ObservableCollection<Appointment>();
+        public ObservableCollection<Appointment> Appointments
+        {
+            get => _appointments;
+            set
+            {
+                _appointments = value;
+                OnPropertyChanged(nameof(Appointments));
+            }
+        }
+
+        private Appointment _inputAppointment = new Appointment();
+        public Appointment InputAppointment
+        {
+            get => _inputAppointment;
+            set
+            {
+                _inputAppointment = value;
+                OnPropertyChanged(nameof(InputAppointment));
+            }
+        }
+
+        public ICommand AddCommand { get; }
+
+        public MainViewModel(IApiService apiService)
+        {
+            _apiService = apiService;
+
+            AddCommand = new RelayCommand(async () => await AddAppointment());
+            _ = LoadAppointments();
+        }
+
+        public async Task LoadAppointments()
+        {
+            var appointments = await _apiService.GetAppointmentsAsync();
+            Appointments.Clear();
+            foreach (var appt in appointments) Appointments.Add(appt);
+        }
+
+        public async Task AddAppointment()
+        {
+            var newAppointment = new Appointment()
+            {
+                Id = Guid.NewGuid(),
+                Title = InputAppointment.Title,
+                PatientName = InputAppointment.PatientName,
+                Description = InputAppointment.Description,
+                ScheduledDate = InputAppointment.ScheduledDate,
+            };
+            await _apiService.CreateAppointmentAsync(newAppointment);
+            Appointments.Add(newAppointment);
+            ResetInputForm();
+        }
+
+        private void ResetInputForm()
+        {
+            InputAppointment.Title = string.Empty;
+            InputAppointment.Description = string.Empty;
+            InputAppointment.PatientName = string.Empty;
+            InputAppointment.ScheduledDate = DateTime.Now;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+    }
+}
