@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AppointmentManagementSystem.Client.Services;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Net.Http;
 using System.Windows;
 
 namespace AppointmentManagementSystem.Client
@@ -13,5 +11,26 @@ namespace AppointmentManagementSystem.Client
     /// </summary>
     public partial class App : Application
     {
+        public new static App Current => (App)Application.Current;
+        public IServiceProvider Services { get; private set; }
+
+        public App()
+        {
+            var services = new ServiceCollection();
+
+            // Register HttpClient with API base URL
+            services.AddSingleton(new HttpClient { BaseAddress = new Uri("http://localhost:5001/") });
+            services.AddSingleton<IApiService, ApiService>();
+            services.AddSingleton<MainWindow>();
+
+            Services = services.BuildServiceProvider();
+        }
+
+        protected override async void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            var mainWindow = Services.GetRequiredService<MainWindow>();
+            mainWindow.Show();
+        }
     }
 }
