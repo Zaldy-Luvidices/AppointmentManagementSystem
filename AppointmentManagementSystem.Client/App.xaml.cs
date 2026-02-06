@@ -2,6 +2,7 @@
 using AppointmentManagementSystem.Client.ViewModels;
 using AppointmentManagementSystem.Client.Views;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Http;
 using System.Windows;
@@ -19,6 +20,13 @@ namespace AppointmentManagementSystem.Client
         public App()
         {
             var services = new ServiceCollection();
+
+            // Logging
+            services.AddLogging(config =>
+            {
+                config.AddDebug();
+                config.AddConsole();
+            });
 
             // Register HttpClient with API base URL
             services.AddSingleton(new HttpClient { BaseAddress = new Uri("http://localhost:5001/") });

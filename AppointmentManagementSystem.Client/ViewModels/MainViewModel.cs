@@ -2,6 +2,7 @@
 using AppointmentManagementSystem.Client.Exceptions;
 using AppointmentManagementSystem.Client.Models;
 using AppointmentManagementSystem.Client.Services;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -14,6 +15,7 @@ namespace AppointmentManagementSystem.Client.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly IApiService _apiService;
+        private readonly ILogger<MainViewModel> _logger;
 
         private ObservableCollection<Appointment> _appointments = new ObservableCollection<Appointment>();
         public ObservableCollection<Appointment> Appointments
@@ -70,9 +72,12 @@ namespace AppointmentManagementSystem.Client.ViewModels
         public ICommand UpdateCommand { get; }
         public ICommand DeleteCommand { get; }
 
-        public MainViewModel(IApiService apiService)
+        public MainViewModel(
+            IApiService apiService,
+            ILogger<MainViewModel> logger)
         {
             _apiService = apiService;
+            _logger = logger;
 
             AddCommand = new RelayCommand(async () => await AddAppointment());
             UpdateCommand = new RelayCommand(async () => await UpdateAppointment());
@@ -84,17 +89,21 @@ namespace AppointmentManagementSystem.Client.ViewModels
         {
             try
             {
+                _logger.LogInformation("Loading appointments...");
                 var appointments = await _apiService.GetAppointmentsAsync();
                 Appointments.Clear();
                 foreach (var appt in appointments) Appointments.Add(appt);
+                _logger.LogInformation("Appointments loaded: {Count}", Appointments.Count);
                 ErrorMessage = string.Empty;
             }
             catch (ApiException ex)
             {
+                _logger.LogError(ex, $"Failed: {ex.Message}");
                 ErrorMessage = $"Failed to load appointments: {ex.Message}";
             }
             catch (Exception)
             {
+                _logger.LogError($"Failed: Unexpected error");
                 ErrorMessage = "Unexpected error occurred.";
             }
         }
@@ -103,6 +112,7 @@ namespace AppointmentManagementSystem.Client.ViewModels
         {
             try
             {
+                _logger.LogInformation($"Adding appointment for {InputAppointment.PatientName}...");
                 var newAppointment = new Appointment()
                 {
                     Id = Guid.NewGuid(),
@@ -114,14 +124,17 @@ namespace AppointmentManagementSystem.Client.ViewModels
                 await _apiService.CreateAppointmentAsync(newAppointment);
                 Appointments.Add(newAppointment);
                 ResetInputForm();
+                _logger.LogInformation("Success");
                 ErrorMessage = string.Empty;
             }
             catch (ApiException ex)
             {
+                _logger.LogError(ex, $"Failed: {ex.Message}");
                 ErrorMessage = $"Failed to add appointment: {ex.Message}";
             }
             catch (Exception)
             {
+                _logger.LogError($"Failed: Unexpected error");
                 ErrorMessage = "Unexpected error occurred.";
             }
         }
@@ -131,6 +144,7 @@ namespace AppointmentManagementSystem.Client.ViewModels
             try
             {
                 if (SelectedAppointment == null) return;
+                _logger.LogInformation($"Updating appointment {SelectedAppointment.Id}...");
                 await _apiService.UpdateAppointmentAsync(SelectedAppointment.Id, InputAppointment);
                 var appt = Appointments.FirstOrDefault(a => a.Id == SelectedAppointment.Id);
                 if (appt != null)
@@ -141,14 +155,17 @@ namespace AppointmentManagementSystem.Client.ViewModels
                     appt.ScheduledDate = InputAppointment.ScheduledDate;
                 }
                 SelectedAppointment = null;
+                _logger.LogInformation("Success");
                 ErrorMessage = string.Empty;
             }
             catch (ApiException ex)
             {
+                _logger.LogError(ex, $"Failed: {ex.Message}");
                 ErrorMessage = $"Failed to update appointment: {ex.Message}";
             }
             catch (Exception)
             {
+                _logger.LogError($"Failed: Unexpected error");
                 ErrorMessage = "Unexpected error occurred.";
             }
         }
@@ -158,17 +175,21 @@ namespace AppointmentManagementSystem.Client.ViewModels
             try
             {
                 if (SelectedAppointment == null) return;
+                _logger.LogInformation($"Deleting appointment {SelectedAppointment.Id}...");
                 await _apiService.DeleteAppointmentAsync(SelectedAppointment.Id);
                 Appointments.Remove(SelectedAppointment);
                 SelectedAppointment = null;
+                _logger.LogInformation("Success");
                 ErrorMessage = string.Empty;
             }
             catch (ApiException ex)
             {
+                _logger.LogError(ex, $"Failed: {ex.Message}");
                 ErrorMessage = $"Failed to delete appointment: {ex.Message}";
             }
             catch (Exception)
             {
+                _logger.LogError($"Failed: Unexpected error");
                 ErrorMessage = "Unexpected error occurred.";
             }
         }
