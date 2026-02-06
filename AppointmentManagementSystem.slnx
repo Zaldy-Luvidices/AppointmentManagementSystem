@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="AppointmentManagementSystem.Api/AppointmentManagementSystem.Api.csproj" />
+  <Project Path="AppointmentManagementSystem.Client/AppointmentManagementSystem.Client.csproj" />
+</Solution>
