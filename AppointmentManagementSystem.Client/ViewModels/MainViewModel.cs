@@ -57,6 +57,7 @@ namespace AppointmentManagementSystem.Client.ViewModels
 
         public ICommand AddCommand { get; }
         public ICommand UpdateCommand { get; }
+        public ICommand DeleteCommand { get; }
 
         public MainViewModel(IApiService apiService)
         {
@@ -64,6 +65,7 @@ namespace AppointmentManagementSystem.Client.ViewModels
 
             AddCommand = new RelayCommand(async () => await AddAppointment());
             UpdateCommand = new RelayCommand(async () => await UpdateAppointment());
+            DeleteCommand = new RelayCommand(async () => await DeleteAppointment());
             _ = LoadAppointments();
         }
 
@@ -101,6 +103,14 @@ namespace AppointmentManagementSystem.Client.ViewModels
                 appt.Title = InputAppointment.Title;
                 appt.ScheduledDate = InputAppointment.ScheduledDate;
             }
+            SelectedAppointment = null;
+        }
+
+        public async Task DeleteAppointment()
+        {
+            if (SelectedAppointment == null) return;
+            await _apiService.DeleteAppointmentAsync(SelectedAppointment.Id);
+            Appointments.Remove(SelectedAppointment);
             SelectedAppointment = null;
         }
 
