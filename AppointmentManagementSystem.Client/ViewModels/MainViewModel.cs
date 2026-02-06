@@ -35,6 +35,25 @@ namespace AppointmentManagementSystem.Client.ViewModels
             }
         }
 
+        private Appointment _selectedAppointment;
+        public Appointment SelectedAppointment
+        {
+            get => _selectedAppointment;
+            set
+            {
+                _selectedAppointment = value;
+                OnPropertyChanged(nameof(SelectedAppointment));
+                if (_selectedAppointment != null)
+                {
+                    InputAppointment.Title = _selectedAppointment.Title;
+                    InputAppointment.Description = _selectedAppointment.Description;
+                    InputAppointment.PatientName = _selectedAppointment.PatientName;
+                    InputAppointment.ScheduledDate = _selectedAppointment.ScheduledDate;
+                }
+                else ResetInputForm();
+            }
+        }
+
         public ICommand AddCommand { get; }
 
         public MainViewModel(IApiService apiService)

@@ -1,5 +1,6 @@
 ﻿using AppointmentManagementSystem.Client.Services;
 using AppointmentManagementSystem.Client.ViewModels;
+using AppointmentManagementSystem.Client.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;

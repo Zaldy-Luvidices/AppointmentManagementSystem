@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/AppointmentManagementSystem.Api/Appointments.db
+/AppointmentManagementSystem.Api/Appointments.db-shm
+/AppointmentManagementSystem.Api/Appointments.db-wal
