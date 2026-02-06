@@ -5,6 +5,7 @@
     <sys:String x:Key="WindowTitle">Appointment Management System</sys:String>
 
     <sys:String x:Key="BtnAddAppointment">Add Appointment</sys:String>
+    <sys:String x:Key="BtnUpdateAppointment">Update</sys:String>
 
     <sys:String x:Key="DgHeaderPatientName">Patient Name</sys:String>
     <sys:String x:Key="DgHeaderTitle">Title</sys:String>

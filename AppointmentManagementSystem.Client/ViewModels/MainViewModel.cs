@@ -4,6 +4,7 @@ using AppointmentManagementSystem.Client.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -55,12 +56,14 @@ namespace AppointmentManagementSystem.Client.ViewModels
         }
 
         public ICommand AddCommand { get; }
+        public ICommand UpdateCommand { get; }
 
         public MainViewModel(IApiService apiService)
         {
             _apiService = apiService;
 
             AddCommand = new RelayCommand(async () => await AddAppointment());
+            UpdateCommand = new RelayCommand(async () => await UpdateAppointment());
             _ = LoadAppointments();
         }
 
@@ -84,6 +87,21 @@ namespace AppointmentManagementSystem.Client.ViewModels
             await _apiService.CreateAppointmentAsync(newAppointment);
             Appointments.Add(newAppointment);
             ResetInputForm();
+        }
+
+        public async Task UpdateAppointment()
+        {
+            if (SelectedAppointment == null) return;
+            await _apiService.UpdateAppointmentAsync(SelectedAppointment.Id, InputAppointment);
+            var appt = Appointments.FirstOrDefault(a => a.Id == SelectedAppointment.Id);
+            if (appt != null)
+            {
+                appt.PatientName = InputAppointment.PatientName;
+                appt.Description = InputAppointment.Description;
+                appt.Title = InputAppointment.Title;
+                appt.ScheduledDate = InputAppointment.ScheduledDate;
+            }
+            SelectedAppointment = null;
         }
 
         private void ResetInputForm()
