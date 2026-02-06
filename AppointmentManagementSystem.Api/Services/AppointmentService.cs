@@ -17,6 +17,11 @@ public class AppointmentService : IAppointmentService
         return await _repository.GetAllAsync();
     }
 
+    public async Task<Appointment?> GetAppointmentAsync(Guid id)
+    {
+        return await _repository.GetAsync(id);
+    }
+
     public async Task AddAppointmentAsync(Appointment appointment)
     {
         await _repository.AddAsync(appointment);

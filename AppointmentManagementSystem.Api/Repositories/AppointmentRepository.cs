@@ -18,6 +18,11 @@ public class AppointmentRepository : IAppointmentRepository
         return await _context.Appointments.ToListAsync();
     }
 
+    public async Task<Appointment?> GetAsync(Guid id)
+    {
+        return await _context.Appointments.SingleOrDefaultAsync(appt => appt.Id == id);
+    }
+
     public async Task AddAsync(Appointment appointment)
     {
         _context.Appointments.Add(appointment);
