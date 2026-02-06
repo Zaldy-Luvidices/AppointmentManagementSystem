@@ -1,4 +1,5 @@
 ﻿using AppointmentManagementSystem.Client.Commands;
+using AppointmentManagementSystem.Client.Exceptions;
 using AppointmentManagementSystem.Client.Models;
 using AppointmentManagementSystem.Client.Services;
 using System;
@@ -55,6 +56,16 @@ namespace AppointmentManagementSystem.Client.ViewModels
             }
         }
 
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set {
+                _errorMessage = value;
+                OnPropertyChanged(nameof(ErrorMessage));
+            }
+        }
+
         public ICommand AddCommand { get; }
         public ICommand UpdateCommand { get; }
         public ICommand DeleteCommand { get; }
@@ -71,47 +82,95 @@ namespace AppointmentManagementSystem.Client.ViewModels
 
         public async Task LoadAppointments()
         {
-            var appointments = await _apiService.GetAppointmentsAsync();
-            Appointments.Clear();
-            foreach (var appt in appointments) Appointments.Add(appt);
+            try
+            {
+                var appointments = await _apiService.GetAppointmentsAsync();
+                Appointments.Clear();
+                foreach (var appt in appointments) Appointments.Add(appt);
+                ErrorMessage = string.Empty;
+            }
+            catch (ApiException ex)
+            {
+                ErrorMessage = $"Failed to load appointments: {ex.Message}";
+            }
+            catch (Exception)
+            {
+                ErrorMessage = "Unexpected error occurred.";
+            }
         }
 
         public async Task AddAppointment()
         {
-            var newAppointment = new Appointment()
+            try
             {
-                Id = Guid.NewGuid(),
-                Title = InputAppointment.Title,
-                PatientName = InputAppointment.PatientName,
-                Description = InputAppointment.Description,
-                ScheduledDate = InputAppointment.ScheduledDate,
-            };
-            await _apiService.CreateAppointmentAsync(newAppointment);
-            Appointments.Add(newAppointment);
-            ResetInputForm();
+                var newAppointment = new Appointment()
+                {
+                    Id = Guid.NewGuid(),
+                    Title = InputAppointment.Title,
+                    PatientName = InputAppointment.PatientName,
+                    Description = InputAppointment.Description,
+                    ScheduledDate = InputAppointment.ScheduledDate,
+                };
+                await _apiService.CreateAppointmentAsync(newAppointment);
+                Appointments.Add(newAppointment);
+                ResetInputForm();
+                ErrorMessage = string.Empty;
+            }
+            catch (ApiException ex)
+            {
+                ErrorMessage = $"Failed to add appointment: {ex.Message}";
+            }
+            catch (Exception)
+            {
+                ErrorMessage = "Unexpected error occurred.";
+            }
         }
 
         public async Task UpdateAppointment()
         {
-            if (SelectedAppointment == null) return;
-            await _apiService.UpdateAppointmentAsync(SelectedAppointment.Id, InputAppointment);
-            var appt = Appointments.FirstOrDefault(a => a.Id == SelectedAppointment.Id);
-            if (appt != null)
+            try
             {
-                appt.PatientName = InputAppointment.PatientName;
-                appt.Description = InputAppointment.Description;
-                appt.Title = InputAppointment.Title;
-                appt.ScheduledDate = InputAppointment.ScheduledDate;
+                if (SelectedAppointment == null) return;
+                await _apiService.UpdateAppointmentAsync(SelectedAppointment.Id, InputAppointment);
+                var appt = Appointments.FirstOrDefault(a => a.Id == SelectedAppointment.Id);
+                if (appt != null)
+                {
+                    appt.PatientName = InputAppointment.PatientName;
+                    appt.Description = InputAppointment.Description;
+                    appt.Title = InputAppointment.Title;
+                    appt.ScheduledDate = InputAppointment.ScheduledDate;
+                }
+                SelectedAppointment = null;
+                ErrorMessage = string.Empty;
             }
-            SelectedAppointment = null;
+            catch (ApiException ex)
+            {
+                ErrorMessage = $"Failed to update appointment: {ex.Message}";
+            }
+            catch (Exception)
+            {
+                ErrorMessage = "Unexpected error occurred.";
+            }
         }
 
         public async Task DeleteAppointment()
         {
-            if (SelectedAppointment == null) return;
-            await _apiService.DeleteAppointmentAsync(SelectedAppointment.Id);
-            Appointments.Remove(SelectedAppointment);
-            SelectedAppointment = null;
+            try
+            {
+                if (SelectedAppointment == null) return;
+                await _apiService.DeleteAppointmentAsync(SelectedAppointment.Id);
+                Appointments.Remove(SelectedAppointment);
+                SelectedAppointment = null;
+                ErrorMessage = string.Empty;
+            }
+            catch (ApiException ex)
+            {
+                ErrorMessage = $"Failed to delete appointment: {ex.Message}";
+            }
+            catch (Exception)
+            {
+                ErrorMessage = "Unexpected error occurred.";
+            }
         }
 
         private void ResetInputForm()

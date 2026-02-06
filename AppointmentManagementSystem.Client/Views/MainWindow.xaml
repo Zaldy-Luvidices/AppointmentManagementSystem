@@ -15,15 +15,18 @@
             <Button Content="{StaticResource BtnDeleteAppointment}" Command="{Binding DeleteCommand}"/>
         </StackPanel>
 
+        <TextBlock Text="{Binding ErrorMessage}" DockPanel.Dock="Top" Foreground="Red" FontWeight="SemiBold"/>
+
         <DataGrid ItemsSource="{Binding Appointments}"
-        SelectedItem="{Binding SelectedAppointment}"
-        CanUserAddRows="False"
-        CanUserDeleteRows="False"
-        IsReadOnly="True"
-        SelectionMode="Single"
-        SelectionUnit="FullRow"
-        Focusable="True"
-        AutoGenerateColumns="False">
+            SelectedItem="{Binding SelectedAppointment}"
+            DockPanel.Dock="Top"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            IsReadOnly="True"
+            SelectionMode="Single"
+            SelectionUnit="FullRow"
+            Focusable="True"
+            AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="{StaticResource DgHeaderPatientName}" Binding="{Binding PatientName}"/>
                 <DataGridTextColumn Header="{StaticResource DgHeaderTitle}" Binding="{Binding Title}"/>
