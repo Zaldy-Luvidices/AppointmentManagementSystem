@@ -11,4 +11,9 @@
     <sys:String x:Key="DgHeaderScheduledDate">Scheduled Date</sys:String>
     <sys:String x:Key="DgHeaderDescription">Description</sys:String>
 
+    <sys:String x:Key="LabelPatientName">Patient Name:</sys:String>
+    <sys:String x:Key="LabelTitle">Title:</sys:String>
+    <sys:String x:Key="LabelDescription">Description:</sys:String>
+    <sys:String x:Key="LabelScheduledDate">Scheduled Date:</sys:String>
+
 </ResourceDictionary>

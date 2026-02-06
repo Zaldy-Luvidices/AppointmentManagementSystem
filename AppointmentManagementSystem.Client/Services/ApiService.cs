@@ -19,7 +19,7 @@ namespace AppointmentManagementSystem.Client.Services
 
         public async Task<List<Appointment>> GetAppointmentsAsync()
         {
-            var response = await _httpClient.GetAsync("api/appointments");
+            var response = await _httpClient.GetAsync("api/appointment");
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<Appointment>>(json) ?? new List<Appointment>();
@@ -29,7 +29,7 @@ namespace AppointmentManagementSystem.Client.Services
         {
             var json = JsonConvert.SerializeObject(appointment);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("api/appointments", content);
+            var response = await _httpClient.PostAsync("api/appointment", content);
             response.EnsureSuccessStatusCode();
         }
 
@@ -37,13 +37,13 @@ namespace AppointmentManagementSystem.Client.Services
         {
             var json = JsonConvert.SerializeObject(appointmentDetails);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"api/appointments/{id}", content);
+            var response = await _httpClient.PutAsync($"api/appointment/{id}", content);
             response.EnsureSuccessStatusCode();
         }
 
         public async Task DeleteAppointmentAsync(Guid id)
         {
-            var response = await _httpClient.DeleteAsync($"api/appointments/{id}");
+            var response = await _httpClient.DeleteAsync($"api/appointment/{id}");
             response.EnsureSuccessStatusCode();
         }
     }
