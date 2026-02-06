@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AppointmentManagementSystem.Api.Repositories;
 
-public class AppointmentRepository
+public class AppointmentRepository : IAppointmentRepository
 {
     private readonly AppDbContext _context;
 
